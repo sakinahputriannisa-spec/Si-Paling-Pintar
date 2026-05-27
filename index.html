@@ -1,0 +1,1657 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Si Paling Pintar - Game Kuis Interaktif</title>
+  
+  <!-- Font Google Premium: Plus Jakarta Sans untuk UI modern & JetBrains Mono untuk metrik/kode -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2 family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* -------------------------------------------------------------
+       1. DEKLARASI VARIABEL CSS & WARNA UTAMA
+       Warna yang digunakan ditentukan langsung dari petunjuk:
+       - #111844 : Biru Dongker Gelap (Primary / Headers / Buttons)
+       - #4B5694 : Biru Amethyst (Accent / Active Options / Hovers)
+       - #7288AE : Biru Baja Muda (Borders / Background Muted / Marks)
+       - #EAE0CF : Krem Hangat (Page Background / High Contrast Base)
+       ------------------------------------------------------------- */
+    :root {
+      --color-navy: #111844;
+      --color-amethyst: #4B5694;
+      --color-steel: #7288AE;
+      --color-cream: #EAE0CF;
+      
+      --color-white: #ffffff;
+      --color-gray-soft: #f8fafc;
+      --color-success: #10b981;
+      --color-danger: #ef4444;
+      --color-warning: #f59e0b;
+      
+      --font-primary: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 24px;
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* -------------------------------------------------------------
+       2. GAYA GLOBAL & RESET LAYOUT
+       ------------------------------------------------------------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background-color: var(--color-cream);
+      color: var(--color-navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    /* Outer Wrapper untuk membatasi ukuran maksimal pada desktop */
+    .app-container {
+      width: 100%;
+      max-width: 680px;
+      margin: auto;
+    }
+
+    /* -------------------------------------------------------------
+       3. DESAIN MASTER CARD
+       ------------------------------------------------------------- */
+    .card {
+      background-color: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 10px 30px rgba(17, 24, 68, 0.08);
+      border: 1px solid rgba(114, 136, 174, 0.2);
+      overflow: hidden;
+      transition: var(--transition-smooth);
+    }
+
+    /* Header di dalam Card */
+    .card-header {
+      background-color: var(--color-navy);
+      color: var(--color-cream);
+      padding: 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    .card-header h1 {
+      font-size: 2.22rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .card-header p {
+      font-size: 0.95rem;
+      font-weight: 500;
+      opacity: 0.85;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Body Card */
+    .card-body {
+      padding: 30px;
+    }
+
+    /* -------------------------------------------------------------
+       4. SCREEN 1: PANEL SELAMAT DATANG (WELCOME SCREEN)
+       ------------------------------------------------------------- */
+    .welcome-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      text-align: center;
+    }
+
+    .welcome-intro-text {
+      color: var(--color-amethyst);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .input-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .input-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--color-navy);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 1.05rem;
+      font-family: var(--font-primary);
+      border-radius: var(--radius-md);
+      border: 2px solid var(--color-steel);
+      color: var(--color-navy);
+      background-color: var(--color-gray-soft);
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+
+    .input-field:focus {
+      border-color: var(--color-amethyst);
+      background-color: var(--color-white);
+      box-shadow: 0 0 0 4px rgba(75, 86, 148, 0.15);
+    }
+
+    .input-error {
+      color: var(--color-danger);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: -4px;
+      display: none;
+    }
+
+    /* Mode Selector Buttons Styling */
+    .mode-selector-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .mode-select-btn {
+      background-color: var(--color-white);
+      border: 2px solid var(--color-steel);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: var(--transition-smooth);
+      font-family: var(--font-primary);
+      text-align: center;
+    }
+
+    .mode-select-btn:hover {
+      border-color: var(--color-amethyst);
+      background-color: rgba(75, 86, 148, 0.03);
+    }
+
+    .mode-select-btn.active-mode {
+      border-color: var(--color-amethyst);
+      background-color: var(--color-navy);
+      color: var(--color-cream);
+    }
+
+    .mode-select-btn .mode-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--color-navy);
+      transition: var(--transition-smooth);
+    }
+
+    .mode-select-btn .mode-desc {
+      font-size: 0.75rem;
+      color: var(--color-steel);
+      transition: var(--transition-smooth);
+      line-height: 1.3;
+    }
+
+    .mode-select-btn.active-mode .mode-title {
+      color: var(--color-cream);
+    }
+
+    .mode-select-btn.active-mode .mode-desc {
+      color: var(--color-cream);
+      opacity: 0.85;
+    }
+
+    /* Aturan Kuis - Grid info */
+    .rules-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+      text-align: left;
+    }
+
+    .rule-item {
+      background-color: rgba(114, 136, 174, 0.08);
+      border: 1px dashed rgba(114, 136, 174, 0.3);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .rule-item-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    /* -------------------------------------------------------------
+       5. SCREEN 2: METRIK & INTERFACE KUIS AKTIF (QUIZ BOARD)
+       ------------------------------------------------------------- */
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .meta-badges-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .player-badge {
+      background-color: var(--color-cream);
+      color: var(--color-navy);
+      padding: 6px 14px;
+      border-radius: 50px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.85rem;
+    }
+
+    .question-counter {
+      font-family: var(--font-mono);
+      color: var(--color-amethyst);
+      font-size: 0.85rem;
+    }
+
+    /* Progress Bar */
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background-color: rgba(114, 136, 174, 0.2);
+      border-radius: 100px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background-color: var(--color-amethyst);
+      border-radius: 100px;
+      transition: width 0.4s ease;
+    }
+
+    /* Detail / Metadata Pertanyaan */
+    .question-details-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .detail-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-category {
+      background-color: rgba(75, 86, 148, 0.1);
+      color: var(--color-amethyst);
+    }
+
+    /* Tingkat Kesulitan Dinamis */
+    .badge-difficulty-mudah {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--color-success);
+    }
+    .badge-difficulty-sedang {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--color-warning);
+    }
+    .badge-difficulty-sulit {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--color-danger);
+    }
+
+    /* Teks Pertanyaan */
+    .question-text {
+      font-size: 1.28rem;
+      font-weight: 700;
+      color: var(--color-navy);
+      line-height: 1.45;
+      margin-bottom: 24px;
+    }
+
+    /* Pilihan Jawaban (Multiple Choice Options) */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .option-button {
+      width: 100%;
+      background-color: var(--color-white);
+      border: 2px solid var(--color-steel);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      text-align: left;
+      font-family: var(--font-primary);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-navy);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    /* Indeks pilihan (A, B, C, D) bergaya Monospace */
+    .option-key {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 28px;
+      height: 28px;
+      background-color: rgba(114, 136, 174, 0.15);
+      border-radius: 50%;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 750;
+      color: var(--color-amethyst);
+      transition: var(--transition-smooth);
+      flex-shrink: 0;
+    }
+
+    .option-text {
+      flex-grow: 1;
+    }
+
+    /* Efek Hover Pilihan */
+    .option-button:hover {
+      border-color: var(--color-amethyst);
+      background-color: rgba(75, 86, 148, 0.03);
+      transform: translateY(-2px);
+    }
+
+    /* Opsi yang Dipilih */
+    .option-button.selected {
+      border-color: var(--color-amethyst);
+      background-color: var(--color-navy);
+      color: var(--color-cream);
+    }
+
+    .option-button.selected .option-key {
+      background-color: var(--color-amethyst);
+      color: var(--color-white);
+    }
+
+    /* -------------------------------------------------------------
+       6. SCREEN 3: RINGKASAN SKOR AKHIR (RESULTS OVERVIEW)
+       ------------------------------------------------------------- */
+    .results-section {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .congrats-text {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-navy);
+    }
+
+    /* Lingkaran Skor Utama */
+    .score-circle-wrapper {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 10px auto;
+    }
+
+    .score-circle {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-amethyst) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--color-white);
+      box-shadow: 0 8px 24px rgba(75, 86, 148, 0.3);
+    }
+
+    .score-value {
+      font-family: var(--font-mono);
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .score-percentage {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+
+    /* Predikat Berbasis Logika Cerdas */
+    .grade-badge {
+      align-self: center;
+      padding: 8px 20px;
+      border-radius: 100px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 12px rgba(17, 24, 68, 0.05);
+    }
+
+    .grade-genius {
+      background-color: rgba(16, 185, 129, 0.12);
+      color: var(--color-success);
+      border: 1px solid var(--color-success);
+    }
+
+    .grade-hebat {
+      background-color: rgba(75, 86, 148, 0.12);
+      color: var(--color-amethyst);
+      border: 1px solid var(--color-amethyst);
+    }
+
+    .grade-cukup {
+      background-color: rgba(245, 158, 11, 0.12);
+      color: var(--color-warning);
+      border: 1px solid var(--color-warning);
+    }
+
+    .grade-kurang {
+      background-color: rgba(239, 68, 68, 0.12);
+      color: var(--color-danger);
+      border: 1px solid var(--color-danger);
+    }
+
+    /* Grid Statistik Deskriptif */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .metric-card {
+      background-color: var(--color-gray-soft);
+      border: 1px solid rgba(114, 136, 174, 0.2);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: center;
+    }
+
+    .metric-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--color-steel);
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--color-navy);
+    }
+
+    /* Accordion / Review Jawaban (Educational Review) */
+    .review-accordion-title {
+      font-size: 1.05rem;
+      font-weight: 750;
+      color: var(--color-navy);
+      text-align: left;
+      margin-top: 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--color-steel);
+    }
+
+    .review-list {
+      max-height: 280px;
+      overflow-y: auto;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-right: 5px;
+      margin-top: 10px;
+    }
+
+    .review-item {
+      background-color: var(--color-white);
+      border: 1px solid rgba(114, 136, 174, 0.2);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(17, 24, 68, 0.02);
+    }
+
+    /* Status Bar Jawaban di Bagian Review */
+    .review-status-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .review-status-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .review-status-correct {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: var(--color-success);
+    }
+
+    .review-status-wrong {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: var(--color-danger);
+    }
+
+    .review-question {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--color-navy);
+    }
+
+    .review-answer-line {
+      font-size: 0.88rem;
+      display: flex;
+      gap: 6px;
+    }
+
+    .review-answer-line span:first-child {
+      font-weight: 600;
+      color: var(--color-steel);
+    }
+
+    .review-answer-line span:last-child {
+      font-weight: 700;
+    }
+
+    /* Penjelasan Soal (Pedagogical Extra) */
+    .review-explanation {
+      background-color: rgba(114, 136, 174, 0.06);
+      border-left: 3px solid var(--color-amethyst);
+      padding: 8px 12px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.8rem;
+      color: #334155;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    /* -------------------------------------------------------------
+       7. SISTEM NAVIGASI & TOMBOL UTAMA
+       ------------------------------------------------------------- */
+    .actions-panel {
+      margin-top: 24px;
+      display: flex;
+      justify-content: stretch;
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      font-family: var(--font-primary);
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 16px 24px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      transition: var(--transition-smooth);
+      box-shadow: 0 4px 12px rgba(17, 24, 68, 0.1);
+    }
+
+    /* Tombol Utama (Primary Button) */
+    .btn-primary {
+      background-color: var(--color-navy);
+      color: var(--color-cream);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--color-amethyst);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(75, 86, 148, 0.25);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Tombol Nonaktif (Disabled Button) */
+    .btn-primary:disabled {
+      background-color: var(--color-steel);
+      color: rgba(255, 255, 255, 0.5);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Tombol Sekunder / Restart (Secondary Button) */
+    .btn-secondary {
+      background-color: rgba(75, 86, 148, 0.1);
+      color: var(--color-amethyst);
+      border: 1px solid rgba(75, 86, 148, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--color-amethyst);
+      color: var(--color-white);
+      transform: translateY(-2px);
+    }
+
+    /* -------------------------------------------------------------
+       8. UTILITY UTK TRANSTRUKSI LAYOUT (SCREEN TOGGLING)
+       ------------------------------------------------------------- */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Animasi transisi masuk yang lembut */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    /* Custom Scrollbar dekoratif pada panel review */
+    .review-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .review-list::-webkit-scrollbar-track {
+      background: rgba(114, 136, 174, 0.08);
+      border-radius: 100px;
+    }
+    .review-list::-webkit-scrollbar-thumb {
+      background: var(--color-steel);
+      border-radius: 100px;
+    }
+    .review-list::-webkit-scrollbar-thumb:hover {
+      background: var(--color-amethyst);
+    }
+
+    /* -------------------------------------------------------------
+       9. RESPONSIVITAS TATA LETAK (MEDIA QUERIES)
+       ------------------------------------------------------------- */
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+      .card-header {
+        padding: 24px 16px;
+      }
+      .card-header h1 {
+        font-size: 1.8rem;
+      }
+      .card-body {
+        padding: 24px 16px;
+      }
+      .rules-grid {
+        grid-template-columns: 1fr;
+      }
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+      .question-text {
+        font-size: 1.15rem;
+      }
+      .option-button {
+        padding: 14px 16px;
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="card animate-fade-in">
+      
+      <!-- HEADER CARD MASTER -->
+      <div class="card-header">
+        <h1 id="app-title-display">Si Paling Pintar</h1>
+        <p>Ajang Pembuktian Kecerdasan</p>
+      </div>
+
+      <!-- ISI KONTEN DINAMIS -->
+      <div class="card-body">
+
+        <!-- ==========================================
+             PANEL 1: SELAMAT DATANG (WELCOME SCREEN)
+             ========================================== -->
+        <div id="screen-welcome" class="welcome-section">
+          <div>
+            <p class="welcome-intro-text">Selamat datang di Arena Kompetisi Berpikir!</p>
+            <p style="font-size: 0.92rem; color: #475569;">
+              Sebelum memulai pertarungan intelektual, tuliskan nama identitas Anda dan pilih mode permainan untuk mencatat skor prestasi di akhir sesi kuis.
+            </p>
+          </div>
+
+          <!-- Input Nama -->
+          <div class="input-wrapper">
+            <span class="input-label" id="lbl-nama">Nama Pemain</span>
+            <input type="text" id="player-name-input" class="input-field" placeholder="Ketik nama panggilan Anda disini..." maxlength="20" autocomplete="off">
+            <span id="name-validation-error" class="input-error">Pemberitahuan: Nama harus diisi minimal 2 karakter!</span>
+          </div>
+
+          <!-- Pilih Mode Permainan (Easy vs Hard Mode Categories) -->
+          <div class="input-wrapper">
+            <span class="input-label">Pilih Mode Permainan</span>
+            <div class="mode-selector-container">
+              <button type="button" id="mode-btn-mudah" class="mode-select-btn active-mode" onclick="setGameMode('mudah')">
+                <span class="mode-title">Mode Mudah</span>
+                <span class="mode-desc">Soal tingkat dasar dan menengah</span>
+              </button>
+              <button type="button" id="mode-btn-sulit" class="mode-select-btn" onclick="setGameMode('sulit')">
+                <span class="mode-title">Mode Sulit</span>
+                <span class="mode-desc">Soal tingkat menengah dan analisis tinggi</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Kartu Aturan / Informasi Dasar Kuis -->
+          <div style="text-align: left; margin-top: 8px;">
+            <p style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--color-steel); letter-spacing: 0.05em; margin-bottom: 8px;">Aturan dan Fitur Arena:</p>
+            <div class="rules-grid">
+              <div class="rule-item">
+                <span class="rule-item-text"><strong>Tanpa Waktu</strong><br>Pikir secara matang dan tenang.</span>
+              </div>
+              <div class="rule-item">
+                <span class="rule-item-text"><strong>Acak Pertanyaan</strong><br>Urutan diacak di setiap sesi baru.</span>
+              </div>
+              <div class="rule-item">
+                <span class="rule-item-text"><strong>Tingkat Dinamis</strong><br>Soal disesuaikan dengan mode yang dipilih.</span>
+              </div>
+              <div class="rule-item">
+                <span class="rule-item-text"><strong>Penjelasan Lengkap</strong><br>Belajar dari pembahasan jawaban.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Aksi Memulai -->
+          <div class="actions-panel">
+            <button id="btn-start" class="btn btn-primary" onclick="handleStartQuiz()">Mulai Permainan</button>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             PANEL 2: KUIS AKTIF (ACTIVE QUESTION SCREEN)
+             ========================================== -->
+        <div id="screen-quiz" class="hidden">
+          <!-- Metrik Atas -->
+          <div class="quiz-meta">
+            <div class="meta-badges-row">
+              <div class="player-badge">
+                <span>Pemain:</span>
+                <span id="player-name-badge">Pemain</span>
+              </div>
+              <div class="player-badge">
+                <span>Mode:</span>
+                <span id="player-mode-badge">Mudah</span>
+              </div>
+            </div>
+            <div class="question-counter">
+              PROGRESS: <span id="current-q-num">1</span>/<span id="total-q-num">10</span>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-bar-container">
+            <div id="quiz-progress-bar" class="progress-bar-fill"></div>
+          </div>
+
+          <!-- Rincian Kategori Kuis -->
+          <div class="question-details-row">
+            <span id="badge-cat" class="detail-badge badge-category">Kategori</span>
+            <span id="badge-diff" class="detail-badge rounded">Kesulitan</span>
+          </div>
+
+          <!-- Soal Utama -->
+          <div id="quiz-question-text" class="question-text">
+            Pertanyaan dimuat...
+          </div>
+
+          <!-- Opsi Pilihan Jawaban -->
+          <div id="quiz-options-container" class="options-list">
+            <!-- Tombol Opsi akan dihasilkan dinamis lewat JavaScript -->
+          </div>
+
+          <!-- Aksi Menuju Soal Berikutnya -->
+          <div class="actions-panel">
+            <button id="btn-next" class="btn btn-primary" onclick="handleNextQuestion()" disabled>
+              Kunci dan Lanjut
+            </button>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             PANEL 3: SKOR AKHIR DAN ULASAN (RESULTS SCREEN)
+             ========================================== -->
+        <div id="screen-results" class="hidden results-section">
+          <div>
+            <p id="results-congrats" class="congrats-text">Selamat, Juara!</p>
+            <p style="font-size: 0.92rem; color: #475569;">Kuis telah selesai. Berikut hasil perjuangan intelektual Anda:</p>
+          </div>
+
+          <!-- Lingkaran Skor Prominen -->
+          <div class="score-circle-wrapper">
+            <div class="score-circle">
+              <span id="results-score-value" class="score-value">80</span>
+              <span class="score-percentage">Poin</span>
+            </div>
+          </div>
+
+          <!-- Predikat Unik -->
+          <div id="results-grade-badge" class="grade-badge grade-hebat">
+            HEBAT!
+          </div>
+
+          <!-- Ringkasan Statistik -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <p class="metric-label">Jawaban Benar</p>
+              <p id="metric-correct" class="metric-value">8</p>
+            </div>
+            <div class="metric-card">
+              <p class="metric-label">Jawaban Salah</p>
+              <p id="metric-wrong" class="metric-value">2</p>
+            </div>
+          </div>
+
+          <!-- Pembahasan Jawaban (Pedagogi) -->
+          <div>
+            <h3 class="review-accordion-title">Lembar Pembahasan Jawaban</h3>
+            <p style="font-size: 0.8rem; color: var(--color-steel); text-align: left; margin: 4px 0 10px 0;">Pelajari pembahasan di bawah ini untuk meningkatkan pengetahuan Anda:</p>
+            
+            <div id="results-review-container" class="review-list">
+              <!-- Item pembahasan ulasan akan disisipkan secara dinamis via JavaScript -->
+            </div>
+          </div>
+
+          <!-- Tombol Ulangi -->
+          <div class="actions-panel">
+            <button id="btn-restart" class="btn btn-secondary" onclick="handleRestartQuiz()">
+              Ulangi Kuis Baru
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       KODE UTAMA PROGRES / JAVASCRIPT - ALGORITMA DAN STRUKTUR DATA
+       Diposisikan terpusat untuk kemudahan pembelajaran di kelas programming
+       ==================================================================== -->
+  <script>
+    // -------------------------------------------------------------
+    // KELOMPOK 1: DATA PERTANYAAN (QUESTION DATA POOL)
+    // Disusun dalam Array of Objects yang mempermudah iterasi indeks.
+    // -------------------------------------------------------------
+    const questionPool = [
+      {
+        id: 1,
+        question: "Manakah yang merupakan kepanjangan resmi dan benar dari singkatan istilah internet 'HTML'?",
+        options: [
+          "Hyperlinks and Text Markup Language",
+          "Hyper Text Markup Language",
+          "Home Tool Markup Language",
+          "Hyper Tech Main Language"
+        ],
+        correctOptionIndex: 1, // Menyimpan indeks jawaban benar yaitu indeks ke-1 (Opsi B)
+        category: "Teknologi",
+        difficulty: "Mudah",
+        explanation: "HTML adalah singkatan dari Hyper Text Markup Language. Ini merupakan bahasa markah standar yang digunakan untuk membuat struktur visual dalam menyusun halaman situs web."
+      },
+      {
+        id: 2,
+        question: "Kota manakah yang secara konstitusi dan hukum formal memegang status sebagai Ibu Kota Negara Indonesia saat ini?",
+        options: [
+          "Bandung",
+          "Surabaya",
+          "Jakarta",
+          "Nusantara (IKN)"
+        ],
+        correctOptionIndex: 2, // Jawaban benar adalah indeks ke-2 (Opsi C - Jakarta)
+        category: "Umum",
+        difficulty: "Mudah",
+        explanation: "Meskipun IKN Nusantara sedang dikembangkan secara intensif di Kalimantan, DKI Jakarta secara yuridis dan konstitusi resmi masih memegang status Ibu Kota Negara Indonesia saat ini."
+      },
+      {
+        id: 3,
+        question: "Dalam prinsip fisika, jika besi dipanaskan ia akan memuai (memanjang). Sebaliknya, jika suhu diturunkan atau besi didinginkan, ia akan...",
+        options: [
+          "Ukurannya tetap sama",
+          "Menyusut ukurannya",
+          "Mencair/Meleleh",
+          "Menguap menjadi gas"
+        ],
+        correctOptionIndex: 1, // Jawaban benar adalah indeks ke-1 (Opsi B)
+        category: "Logika Sederhana",
+        difficulty: "Mudah",
+        explanation: "Karena efek termal, partikel benda logam/besi akan saling mendekat ketika kehilangan kalor, memicu penyusutan volume benda (ukurannya menyusut)."
+      },
+      {
+        id: 4,
+        question: "Manakah penulisan kosakata berikut ini yang BENAR untuk kategori kata baku menurut Kamus Besar Bahasa Indonesia (KBBI)?",
+        options: [
+          "Apotik",
+          "Apotek",
+          "Apotec",
+          "Afotek"
+        ],
+        correctOptionIndex: 1, // Jawaban benar adalah indeks ke-1 (Opsi B)
+        category: "Bahasa Indonesia",
+        difficulty: "Mudah",
+        explanation: "Menurut KBBI, kata bahasa Indonesia yang diserap dari bahasa Belanda (apotheek) dibakukan menjadi 'Apotek' menggunakan vokal 'e', bukan 'i'."
+      },
+      {
+        id: 5,
+        question: "Siapakah nama karakter kucing robot fiksi masa depan berwarna biru bertubuh bulat yang setia berteman dengan Nobita?",
+        options: [
+          "Pikachu",
+          "Doraemon",
+          "Hello Kitty",
+          "Totoro"
+        ],
+        correctOptionIndex: 1, // Jawaban benar adalah indeks ke-1 (Opsi B)
+        category: "Pop Culture",
+        difficulty: "Mudah",
+        explanation: "Doraemon adalah tokoh fiksi kucing robot abad ke-22 berbakat unik yang menggunakan kantong ajaibnya untuk menolong anak sekolah pemalas bernama Nobita."
+      },
+      {
+        id: 6,
+        question: "Petani ingin menyeberangkan serigala, kambing, dan sekeranjang sayur ke seberang sungai memakai perahu mini. Perahu cuma muat petani dan satu barang sekali jalan. Jika ditinggal berdua tanpa petani: serigala akan memangsa kambing, dan kambing akan melahap sayuran. Untuk memulai perjalanan perdana dengan selamat, barang/hewan apa yang harus diseberangkan petani dahulu?",
+        options: [
+          "Serigala",
+          "Sayuran",
+          "Kambing",
+          "Tidak ada yang bisa dibawa"
+        ],
+        correctOptionIndex: 2, // Jawaban benar adalah indeks ke-2 (Opsi C)
+        category: "Logika Klasik",
+        difficulty: "Sulit",
+        explanation: "Petani wajib menyeberangkan kambing terlebih dahulu. Dengan begitu, serigala dan sayuran ditinggalkan bersama di seberang, yang mana aman karena serigala tidak memakan tumbuhan."
+      },
+      {
+        id: 7,
+        question: "Manakah jenis protokol lalu lintas data internet berikut yang dilengkapi sistem enkripsi (kunci keamanan) saat melayani pemuatan halaman situs?",
+        options: [
+          "HTTP",
+          "FTP",
+          "HTTPS",
+          "SMTP"
+        ],
+        correctOptionIndex: 2, // Jawaban benar adalah indeks ke-2 (Opsi C)
+        category: "Teknologi",
+        difficulty: "Sulit",
+        explanation: "HTTPS (Hypertext Transfer Protocol Secure) merupakan varian protokol HTTP yang menambahkan enkripsi SSL/TLS demi meredam celah kebocoran data sensitif."
+      },
+      {
+        id: 8,
+        question: "Siapakah nama tokoh Presiden Republik Indonesia yang akrab dicintai dan dijuluki secara resmi sebagai 'Bapak Pluralisme Indonesia'?",
+        options: [
+          "Ir. Soekarno",
+          "KH. Abdurrahman Wahid (Gus Dur)",
+          "BJ. Habibie",
+          "Joko Widodo"
+        ],
+        correctOptionIndex: 1, // Jawaban benar adalah indeks ke-1 (Opsi B)
+        category: "Umum",
+        difficulty: "Sulit",
+        explanation: "KH. Abdurrahman Wahid (Gus Dur) dikenal gigih mengawal toleransi kebebasan beragama, merangkul kelompok minoritas, dan menetapkan hari raya Imlek nasional."
+      },
+      {
+        id: 9,
+        question: "Berdasarkan pedoman hierarki matematika KABATAKU (Kali-Bagi-Tambah-Kurang), berapakah jawaban akhir aljabar dasar: 5 + 5 x 5 - 5?",
+        options: [
+          "45",
+          "25",
+          "20",
+          "50"
+        ],
+        correctOptionIndex: 1, // Jawaban benar adalah indeks ke-1 (Opsi B)
+        category: "Logika Matematika",
+        difficulty: "Sedang",
+        explanation: "Utamakan operasi perkalian terlebih dahulu: 5 x 5 = 25. Lalu operasikan urutan dari posisi terkiri: 5 + 25 - 5 = 25."
+      },
+      {
+        id: 10,
+        question: "Candi bercorak agama Buddha terbesar di dunia yang dikukuhkan UNESCO sebagai situs warisan dunia bersejarah berlokasi di provinsi...",
+        options: [
+          "Jawa Barat",
+          "Jawa Timur",
+          "Jawa Tengah",
+          "D.I. Yogyakarta"
+        ],
+        correctOptionIndex: 2, // Jawaban benar adalah indeks ke-2 (Opsi C)
+        category: "Budaya & Geografi",
+        difficulty: "Sedang",
+        explanation: "Candi Borobudur terletak di Magelang, Provinsi Jawa Tengah. Borobudur sering salah dipercayai berlokasi di D.I. Yogyakarta akibat keterikatan lokasi wisata pariwisata regional."
+      },
+      {
+        id: 11,
+        question: "Siapakah pencipta lagu kebangsaan Indonesia Raya yang dikumandangkan pertama kali pada Kongres Pemuda II tahun 1928?",
+        options: [
+          "R.A. Kartini",
+          "W.R. Soepratman",
+          "Sutan Syahrir",
+          "Ibu Sud"
+        ],
+        correctOptionIndex: 1,
+        category: "Sejarah",
+        difficulty: "Mudah",
+        explanation: "Wage Rudolf Soepratman adalah komposer yang menciptakan lagu kebangsaan Indonesia Raya sebagai simbol perjuangan kemerdekaan."
+      },
+      {
+        id: 12,
+        question: "Planet manakah yang terkenal dengan julukan 'Planet Merah' karena tingginya kandungan zat besi oksida di permukaannya?",
+        options: [
+          "Venus",
+          "Mars",
+          "Yupiter",
+          "Merkurius"
+        ],
+        correctOptionIndex: 1,
+        category: "Astronomi",
+        difficulty: "Mudah",
+        explanation: "Mars dijuluki Planet Merah karena warna permukaannya dipenuhi sisa karat/oksidasi besi dalam debu dan bebatuan tanahnya."
+      },
+      {
+        id: 13,
+        question: "Hewan mamalia darat terbesar di dunia yang masih hidup sampai saat ini dan memiliki belalai panjang adalah...",
+        options: [
+          "Gajah",
+          "Paus Biru",
+          "Badak Sumatra",
+          "Kuda Nil"
+        ],
+        correctOptionIndex: 0,
+        category: "Biologi",
+        difficulty: "Mudah",
+        explanation: "Gajah adalah mamalia darat terbesar saat ini. Paus Biru memang mamalia terbesar secara keseluruhan, namun ia hidup di lautan."
+      },
+      {
+        id: 14,
+        question: "Manakah organ tubuh manusia yang berfungsi memompa darah ke seluruh bagian tubuh melalui pembuluh darah?",
+        options: [
+          "Paru-paru",
+          "Jantung",
+          "Hati",
+          "Ginjal"
+        ],
+        correctOptionIndex: 1,
+        category: "Biologi",
+        difficulty: "Mudah",
+        explanation: "Jantung berfungsi mengalirkan darah beroksigen dan nutrisi melalui sistem pernapasan dan jantung pembuluh darah kita."
+      },
+      {
+        id: 15,
+        question: "Komponen perangkat keras komputer yang sering disebut sebagai 'Otak' komputer karena bertugas memproses semua instruksi adalah...",
+        options: [
+          "RAM",
+          "SSD / Harddisk",
+          "CPU (Processor)",
+          "Power Supply"
+        ],
+        correctOptionIndex: 2,
+        category: "Teknologi",
+        difficulty: "Mudah",
+        explanation: "CPU (Central Processing Unit) memproses instruksi dasar dari sistem operasi dan perangkat lunak di komputer."
+      },
+      {
+        id: 16,
+        question: "Dalam sistem periodik unsur kimia, lambang kimia 'Au' melambangkan logam mulia yang berharga tinggi berupa...",
+        options: [
+          "Perak",
+          "Emas",
+          "Tembaga",
+          "Aluminium"
+        ],
+        correctOptionIndex: 1,
+        category: "Kimia",
+        difficulty: "Sedang",
+        explanation: "'Au' berasal dari nama Latin 'Aurum' yang merujuk pada unsur Emas dengan nomor atom 79."
+      },
+      {
+        id: 17,
+        question: "Manakah samudra terluas dan terdalam di planet bumi saat ini?",
+        options: [
+          "Samudra Atlantik",
+          "Samudra Hindia",
+          "Samudra Pasifik",
+          "Samudra Arktik"
+        ],
+        correctOptionIndex: 2,
+        category: "Geografi",
+        difficulty: "Sedang",
+        explanation: "Samudra Pasifik mencakup lebih dari sepertiga permukaan bumi dengan kedalaman rata-rata dan maksimum terbesar (Palung Mariana)."
+      },
+      {
+        id: 18,
+        question: "Sebuah dadu standar bermata enam dilempar sekali. Berapakah peluang teoretis munculnya angka prima (2, 3, atau 5)?",
+        options: [
+          "1/6",
+          "1/3",
+          "1/2",
+          "2/3"
+        ],
+        correctOptionIndex: 2,
+        category: "Logika Matematika",
+        difficulty: "Sedang",
+        explanation: "Mata dadu prima ada 3 (2, 3, 5) dari total 6 nomor. Maka peluangnya adalah 3/6 = 1/2."
+      },
+      {
+        id: 19,
+        question: "Garis khayal khatulistiwa (ekuator) membagi bumi menjadi bagian utara dan selatan. Kota di Indonesia yang tepat dilewati oleh garis khatulistiwa ini dan memiliki Tugu Khatulistiwa adalah...",
+        options: [
+          "Pontianak",
+          "Samarinda",
+          "Padang",
+          "Palu"
+        ],
+        correctOptionIndex: 0,
+        category: "Geografi",
+        difficulty: "Sedang",
+        explanation: "Kota Pontianak di Kalimantan Barat terkenal sebagai Kota Khatulistiwa karena letak geografisnya tepat memotong koordinat 0 derajat lintang bumi."
+      },
+      {
+        id: 20,
+        question: "Jika 5 mesin pabrik bekerja serentak mampu menghasilkan 5 buah baju dalam waktu 5 menit, berapakah waktu yang dibutuhkan oleh 100 mesin sejenis untuk memproduksi 100 buah baju?",
+        options: [
+          "100 menit",
+          "50 menit",
+          "5 menit",
+          "1 menit"
+        ],
+        correctOptionIndex: 2,
+        category: "Logika Analisis",
+        difficulty: "Sulit",
+        explanation: "Setiap 1 mesin membutuhkan waktu 5 menit untuk membuat 1 baju secara mandiri. Ketika 100 mesin dinyalakan bersamaan, masing-masing menyelesaikan 1 baju dalam 5 menit secara paralel."
+      },
+      {
+        id: 21,
+        question: "Siapakah matematikawan dan penemu asal Inggris yang diakui dunia sebagai 'Bapak Komputer' berkat rancangan mesin analitisnya (Analytical Engine)?",
+        options: [
+          "Alan Turing",
+          "Charles Babbage",
+          "Ada Lovelace",
+          "John von Neumann"
+        ],
+        correctOptionIndex: 1,
+        category: "Sejarah Teknologi",
+        difficulty: "Sulit",
+        explanation: "Charles Babbage merancang Analytical Engine pada abad ke-19 yang menjadi cetak biru mekanis pertama bagi prinsip kerja komputer modern."
+      },
+      {
+        id: 22,
+        question: "Konsep berpikir dalam pemrograman komputer yang memecah masalah besar menjadi sub-bagian kecil yang lebih mudah dikelola disebut...",
+        options: [
+          "Otomatisasi",
+          "Dekomposisi",
+          "Abstraksi",
+          "Pengenalan Pola"
+        ],
+        correctOptionIndex: 1,
+        category: "Informatika",
+        difficulty: "Sulit",
+        explanation: "Dekomposisi adalah teknik memecah masalah kompleks menjadi elemen-elemen kecil agar analisa dan implementasi solusi jauh lebih tertata."
+      },
+      {
+        id: 23,
+        question: "Seorang detektif sedang menetapkan tersangka dari kematian seorang miliarder. Ada 3 orang terdekat: A (Istri, mengaku sedang berbelanja ke supermarket di luar kota seharian), B (Sekretaris, mengaku mengirim berkas pajak triwulanan di kantor pos), dan C (Keponakan, mengaku tertidur lelap seharian di kamar tamu). Di samping jasad miliarder ditemukan secarik kertas koran hari itu yang berlumur darah korban. Siapa tersangka dengan alibi paling lemah/meragukan?",
+        options: [
+          "Tersangka A",
+          "Tersangka B",
+          "Tersangka C",
+          "Ketiganya memiliki alibi sempurna"
+        ],
+        correctOptionIndex: 0,
+        category: "Logika Analisis",
+        difficulty: "Sulit",
+        explanation: "Tersangka A. Sang istri mengaku pergi ke luar kota seharian penuh, namun jasad korban ditemukan bersama koran lokal hari itu yang berlumur darah segar, menunjukkan peristiwa pembunuhan baru saja terjadi secara cepat di dalam rumah."
+      },
+      {
+        id: 24,
+        question: "Negara manakah di dunia yang menggunakan mata uang Euro (€) namun secara geografis dan politik bukanlah bagian dari anggota Uni Eropa (EU)?",
+        options: [
+          "Irlandia",
+          "Yunani",
+          "Swiss",
+          "Vatikan"
+        ],
+        correctOptionIndex: 3,
+        category: "Finansial & Dunia",
+        difficulty: "Sulit",
+        explanation: "Vatikan (beserta Monako, San Marino, dan Andorra) menggunakan Euro sebagai mata uang resmi berdasarkan perjanjian moneter khusus, sekalipun mereka bukan merupakan anggota Uni Eropa."
+      }
+    ];
+
+    // -------------------------------------------------------------
+    // KELOMPOK 2: ARSIP MANAJEMEN STATE (QUIZ STATE ENGINE)
+    // Variabel state untuk mencatat transisi kuis yang sedang aktif.
+    // -------------------------------------------------------------
+    let playerName = "";                     // Menyimpan nama pemain yang lulus validasi input
+    let selectedMode = "mudah";              // Menyimpan mode terpilih ("mudah" atau "sulit")
+    let shuffledQuestions = [];              // Array hasil pengatasan algoritma acak pertanyaan
+    let currentQuestionIndex = 0;            // Indeks urutan soal yang sedang dilayani saat ini
+    let playerScore = 0;                     // Skor perolehan kumulatif pemain
+    let selectedOptionIndex = null;          // Indeks pilihan jawaban yang sedang ditandai pemain
+    let userAnswersHistory = [];             // Kumpulan riwayat respon jawab pemain untuk ulasan lembar nilai
+
+    // -------------------------------------------------------------
+    // KELOMPOK 3: ALGORITMA SHUFFLE (FISHER-YATES SHUFFLE ALGORITHM)
+    // Sangat cocok didemonstrasikan di kelas algoritma pemrograman.
+    // Memproses waktu linear O(N) dan melakukan penukaran elemen di tempat.
+    // -------------------------------------------------------------
+    function shuffleArray(originalArray) {
+      // Duplikasi array agar tidak merusak database array data asli (Immutability pattern)
+      const array = [...originalArray];
+      
+      // Lakukan loop secara mundur dari akhir indeks ke awal indeks
+      for (let i = array.length - 1; i > 0; i--) {
+        // Hasilkan bilangan acak indeks bulat acak dari 0 hingga i
+        const j = Math.floor(Math.random() * (i + 1));
+        
+        // Melakukan teknik penukaran tempat (Swap) variabel memanfaatkan penugasan destrukturisasi modern
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // -------------------------------------------------------------
+    // KELOMPOK 4: SIKLUS PENGENDALI EVENT (CONTROLLER FLOWS)
+    // -------------------------------------------------------------
+
+    /**
+     * Memperbarui mode permainan terpilih secara visual dan sistem state.
+     * @param {string} mode - Mode permainan yang diklik ("mudah" atau "sulit")
+     */
+    function setGameMode(mode) {
+      selectedMode = mode;
+      
+      // Matikan seluruh status visual aktif
+      document.getElementById("mode-btn-mudah").classList.remove("active-mode");
+      document.getElementById("mode-btn-sulit").classList.remove("active-mode");
+      
+      // Aktifkan visual eksklusif sesuai yang diklik
+      if (mode === "mudah") {
+        document.getElementById("mode-btn-mudah").classList.add("active-mode");
+      } else {
+        document.getElementById("mode-btn-sulit").classList.add("active-mode");
+      }
+    }
+
+    /**
+     * Memulai Kuis: Memvalidasi nama, memfilter berdasarkan kategori mode, mengacak pertanyaan, dan beralih layar.
+     */
+    function handleStartQuiz() {
+      const inputElement = document.getElementById("player-name-input");
+      const errorElement = document.getElementById("name-validation-error");
+      
+      // Mengambil input nama dan memangkas spasi (Trim)
+      const inputName = inputElement.value.trim();
+      
+      // VALIDASI: Menguji input nama kosong atau kurang dari batas minimal syarat (2 huruf)
+      if (inputName.length < 2) {
+        errorElement.style.display = "block"; // Munculkan sinyal peringatan bahaya
+        inputElement.focus();
+        return;
+      }
+      
+      // Meloloskan perizinan pemain
+      errorElement.style.display = "none";
+      playerName = inputName;
+      
+      // PROSES PENYARINGAN BERDASARKAN MODE (CATEGORIES OF GAME EASY & HARD)
+      let matchedClassPool = [];
+      if (selectedMode === "mudah") {
+        // Mode Mudah: Menyaring pertanyaan bertingkat "Mudah" dan "Sedang"
+        matchedClassPool = questionPool.filter(q => q.difficulty === "Mudah" || q.difficulty === "Sedang");
+      } else {
+        // Mode Sulit: Menyaring pertanyaan bertingkat "Sedang" dan "Sulit"
+        matchedClassPool = questionPool.filter(q => q.difficulty === "Sedang" || q.difficulty === "Sulit");
+      }
+      
+      // MENERAPKAN ALGORITMA ACAK: Mengacak koleksi soal hasil saringan, batasi maksimal 10 soal untuk pengalaman prima
+      shuffledQuestions = shuffleArray(matchedClassPool).slice(0, 10);
+      
+      // RESET STATE SESSION: Menormalkan variabel status kuis
+      currentQuestionIndex = 0;
+      playerScore = 0;
+      selectedOptionIndex = null;
+      userAnswersHistory = [];
+      
+      // Memperbarui UI Profil Pemain dan lencana aktif
+      document.getElementById("player-name-badge").innerText = playerName;
+      document.getElementById("player-mode-badge").innerText = selectedMode === "mudah" ? "Mudah" : "Sulit";
+      document.getElementById("total-q-num").innerText = shuffledQuestions.length;
+      
+      // Transisi visual layar: Hilangkan Selamat Datang, munculkan Kuis Aktif
+      document.getElementById("screen-welcome").classList.add("hidden");
+      document.getElementById("screen-quiz").classList.remove("hidden");
+      
+      // Muat data soal perdana
+      loadQuestion();
+    }
+
+    /**
+     * Memuat dan Menampilkan Data Pertanyaan Aktif sesuai Indeks Progres.
+     */
+    function loadQuestion() {
+      // Pastikan tombol Lanjut ternetralisir (Mati) sebelum opsi baru diisi
+      selectedOptionIndex = null;
+      const btnNext = document.getElementById("btn-next");
+      btnNext.disabled = true;
+      btnNext.innerText = "Kunci dan Lanjut";
+      
+      // Ambil objek pertanyaan aktif
+      const currentQuestion = shuffledQuestions[currentQuestionIndex];
+      
+      // Update data angka counter kuis
+      document.getElementById("current-q-num").innerText = currentQuestionIndex + 1;
+      
+      // Kalkulasi progres presentase visual bar berjalan
+      const progressPercent = ((currentQuestionIndex) / shuffledQuestions.length) * 100;
+      document.getElementById("quiz-progress-bar").style.width = `${progressPercent}%`;
+      
+      // Tampilkan taksonomi metadata lencana
+      const badgeCategory = document.getElementById("badge-cat");
+      const badgeDifficulty = document.getElementById("badge-diff");
+      
+      badgeCategory.innerText = currentQuestion.category;
+      badgeDifficulty.className = "detail-badge"; // Bersihkan kelas sebelumnya
+      
+      // Menggunakan struktur bersyarat IF-ELSE untuk membedakan gaya warna tingkat kesulitan
+      if (currentQuestion.difficulty === "Mudah") {
+        badgeDifficulty.classList.add("badge-difficulty-mudah");
+        badgeDifficulty.innerText = "Mudah";
+      } else if (currentQuestion.difficulty === "Sedang") {
+        badgeDifficulty.classList.add("badge-difficulty-sedang");
+        badgeDifficulty.innerText = "Sedang";
+      } else {
+        badgeDifficulty.classList.add("badge-difficulty-sulit");
+        badgeDifficulty.innerText = "Sulit";
+      }
+      
+      // Tampilkan teks soal kuis
+      document.getElementById("quiz-question-text").innerText = currentQuestion.question;
+      
+      // Bangun rangkaian pilihan jawaban dinamis menggunakan DOM API
+      const optionsContainer = document.getElementById("quiz-options-container");
+      optionsContainer.innerHTML = ""; // Kosongkan elemen sisa lama
+      
+      // Simbol alfabet untuk merepresentasikan kunci list
+      const keyAlphabets = ["A", "B", "C", "D"];
+      
+      currentQuestion.options.forEach((optionText, idx) => {
+        // Buat elemen tombol interaktif baru
+        const button = document.createElement("button");
+        button.className = "option-button animate-fade-in";
+        button.id = `opt-btn-${idx}`;
+        button.setAttribute("onclick", `handleSelectOption(${idx})`);
+        
+        // Susun struktur internal tombol (Badge Kunci + Teks Opsi)
+        button.innerHTML = `
+          <span class="option-key">${keyAlphabets[idx]}</span>
+          <span class="option-text">${optionText}</span>
+        `;
+        
+        // Sisipkan ke kontainer utama halaman kuis
+        optionsContainer.appendChild(button);
+      });
+    }
+
+    /**
+     * Memilih jawaban: Menandai state indeks terpilih dan melepaskan status disable tombol Lanjut.
+     * @param {number} index - Indeks pilihan jawaban yang diklik (0, 1, 2, atau 3)
+     */
+    function handleSelectOption(index) {
+      // Catat indeks terpilih di ingatan state
+      selectedOptionIndex = index;
+      
+      // Ambil seluruh elemen opsi tombol pilihan di halaman
+      const optionButtons = document.querySelectorAll(".option-button");
+      
+      // Hapus kelas CSS terpilih 'selected' pada semua tombol untuk mencegah duplikasi seleksi
+      optionButtons.forEach(btn => btn.classList.remove("selected"));
+      
+      // Berikan style penanda terpilih eksklusif ke opsi target pilihan terkini
+      const targetButton = document.getElementById(`opt-btn-${index}`);
+      if (targetButton) {
+        targetButton.classList.add("selected");
+      }
+      
+      // Aktifkan tombol navigasi Lanjut
+      const btnNext = document.getElementById("btn-next");
+      btnNext.disabled = false;
+      
+      // Jika soal terakhir, ganti teks tombol menjadi Selesaikan Kuis
+      if (currentQuestionIndex === shuffledQuestions.length - 1) {
+        btnNext.innerText = "Selesaikan Kuis";
+      } else {
+        btnNext.innerText = "Kunci dan Lanjut";
+      }
+    }
+
+    /**
+     * Menjalankan evaluasi logika penilaian jawaban dan memindahkan progres soal kuis ke depan.
+     */
+    function handleNextQuestion() {
+      // Keamanan dasar dari bypass tombol klik hantu
+      if (selectedOptionIndex === null) return;
+      
+      const currentQuestion = shuffledQuestions[currentQuestionIndex];
+      
+      // EVALUASI LOGIKA SCORING: Jika indeks terpilih menyamai indeks kunci rahasia, loloskan skor bertambah
+      const isCorrect = (selectedOptionIndex === currentQuestion.correctOptionIndex);
+      
+      // Simpan riwayat jawaban saat ini demi lembar pembahasan di akhir kuis
+      userAnswersHistory.push({
+        questionMeta: currentQuestion,
+        selectedIdx: selectedOptionIndex,
+        isCorrect: isCorrect
+      });
+      
+      if (isCorrect) {
+        // Tambahkan skor
+        playerScore += 1;
+      }
+      
+      // Tingkatkan index kursor urutan soal
+      currentQuestionIndex++;
+      
+      // PERCABANGAN ALUR EVALUASI: Uji apakah masih ada sisa soal, atau kuis wajib dialihkan selesai
+      if (currentQuestionIndex < shuffledQuestions.length) {
+        // Sisa soal masih ada, muat berikutnya
+        loadQuestion();
+      } else {
+        // Pertunjukan selesai, kalkulasi skor akumulasi dan tampilkan layar nilai
+        showFinalResults();
+      }
+    }
+
+    /**
+     * Mengkalkulasi metrik final, menyusun lembar ulasan pedagogi, dan meluncurkan Result Screen.
+     */
+    function showFinalResults() {
+      // Selesaikan animasi transisi visual progress bar penuh 100%
+      document.getElementById("quiz-progress-bar").style.width = "100%";
+      
+      // Hitung persentase nilai akhir (skala 100) menggunakan operasi logika dasar
+      const totalQuestions = shuffledQuestions.length;
+      const finalPercentageScore = Math.round((playerScore / totalQuestions) * 100);
+      
+      // Tampilkan metrik mentah di halaman hasil
+      document.getElementById("results-score-value").innerText = finalPercentageScore;
+      document.getElementById("metric-correct").innerText = `${playerScore} Soal`;
+      document.getElementById("metric-wrong").innerText = `${totalQuestions - playerScore} Soal`;
+      
+      // Pengecekan Predikat Akumulasi menggunakan IF-ELSE majemuk (Multi-branch conditional)
+      const gradeBadge = document.getElementById("results-grade-badge");
+      const congratsText = document.getElementById("results-congrats");
+      
+      // Reset kelas grade sisa sesi kuis sebelumnya
+      gradeBadge.className = "grade-badge";
+      
+      if (finalPercentageScore >= 90) {
+        gradeBadge.innerText = "Genius / Sangat Cerdas";
+        gradeBadge.classList.add("grade-genius");
+        congratsText.innerText = `Luar Biasa, ${playerName}!`;
+      } else if (finalPercentageScore >= 70) {
+        gradeBadge.innerText = "Hebat / Pintar";
+        gradeBadge.classList.add("grade-hebat");
+        congratsText.innerText = `Kerja Bagus, ${playerName}!`;
+      } else if (finalPercentageScore >= 50) {
+        gradeBadge.innerText = "Cukup Baik / Lumayan";
+        gradeBadge.classList.add("grade-cukup");
+        congratsText.innerText = `Kemajuan Baik, ${playerName}!`;
+      } else {
+        gradeBadge.innerText = "Ayo Belajar Lagi!";
+        gradeBadge.classList.add("grade-kurang");
+        congratsText.innerText = `Tetap Semangat, ${playerName}!`;
+      }
+      
+      // Membuat lembar Pembahasan Jawaban (Review Section) secara dinamis
+      const reviewContainer = document.getElementById("results-review-container");
+      reviewContainer.innerHTML = ""; // Bersihkan kontainer ulasan
+      
+      // Menyusun baris komparasi untuk setiap riwayat soal yang dijawab pemain
+      userAnswersHistory.forEach((historyItem, index) => {
+        const q = historyItem.questionMeta;
+        const alphabetKeys = ["A", "B", "C", "D"];
+        
+        // Ambil label tekstual dari jawaban yang dipilih dan kunci yang tepat
+        const selectedText = q.options[historyItem.selectedIdx];
+        const correctText = q.options[q.correctOptionIndex];
+        
+        // Siapkan instrumen elemen ulasan berupa div
+        const reviewItemElement = document.createElement("div");
+        reviewItemElement.className = "review-item";
+        
+        // Atur lencana kebenaran ulasan soal
+        const statusBadgeClass = historyItem.isCorrect ? "review-status-correct" : "review-status-wrong";
+        const statusBadgeText = historyItem.isCorrect ? "BENAR" : "SALAH";
+        
+        reviewItemElement.innerHTML = `
+          <div class="review-status-wrapper">
+            <span class="review-status-badge ${statusBadgeClass}">${statusBadgeText}</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--color-steel);">SOAL #${index + 1}</span>
+          </div>
+          <p class="review-question">${q.question}</p>
+          <div class="review-answer-line">
+            <span>Jawaban Anda:</span>
+            <span style="color: ${historyItem.isCorrect ? 'var(--color-success)' : 'var(--color-danger)'};">
+              (${alphabetKeys[historyItem.selectedIdx]}) ${selectedText}
+            </span>
+          </div>
+          ${!historyItem.isCorrect ? `
+            <div class="review-answer-line">
+              <span>Jawaban Tepat:</span>
+              <span style="color: var(--color-success);">
+                (${alphabetKeys[q.correctOptionIndex]}) ${correctText}
+              </span>
+            </div>
+          ` : ''}
+          <div class="review-explanation">
+            <strong>Penjelasan Edukatif:</strong> ${q.explanation}
+          </div>
+        `;
+        
+        reviewContainer.appendChild(reviewItemElement);
+      });
+      
+      // Alihkan halaman layar: Sembunyikan panel kuis aktif, tampilkan panel ringkasan akhir
+      document.getElementById("screen-quiz").classList.add("hidden");
+      document.getElementById("screen-results").classList.remove("hidden");
+    }
+
+    /**
+     * Operator Pemulihan (Resetter/Restart) untuk memulai kuis yang segar ke sesi halaman login.
+     */
+    function handleRestartQuiz() {
+      // Hapus isian nama pemain tersimpan agar pengguna bisa mengisi ulang/berganti profil
+      document.getElementById("player-name-input").value = "";
+      
+      // Alihkan balik halaman layar: Sembunyikan ulasan skor akhir, tampilkan selamat datang
+      document.getElementById("screen-results").classList.add("hidden");
+      document.getElementById("screen-welcome").classList.remove("hidden");
+    }
+
+    // -------------------------------------------------------------
+    // KELOMPOK 5: PENGHUBUNG KEYBOARD (ACCESSIBILITY EXTRA)
+    // Menghubungkan fungsi Enter pada isian nama agar menstimulasi tombol mulai
+    // -------------------------------------------------------------
+    document.getElementById("player-name-input").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault(); // Redam reload laman default browser
+        handleStartQuiz();
+      }
+    });
+
+  </script>
+</body>
+</html>
